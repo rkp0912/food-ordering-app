@@ -1,0 +1,40 @@
+.restaurantCard.MuiCard-root{
+    margin:10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 400px;
+    width: 90%;
+ }
+
+
+.restaurant-image{
+    width: 100%;
+    height: 100%;
+}
+
+
+.restaurantCardMedia{
+    height: 40%;
+}
+
+.restaurantName-heading{
+    font-weight: normal;
+}
+
+.restaurant-card-actions{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+.like-button.MuiButton-contained{
+    box-shadow: none;
+    background-color: rgb(197, 197, 29);
+    color: white;
+}
+
+.like-button.MuiButton-root{
+    border-radius: 0px;
+}
