@@ -1,0 +1,209 @@
+.app-header {
+    background-color: #263238;
+    height: 36px;
+    padding: 8px 32px 8px 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.app-text{
+    color: #fff;
+    size: 18px;
+}
+
+.search-div{
+    display: flex;
+    flex-direction: row;
+    height: 36px;
+    width: 300px;
+    /* background-color: #c0c0c0; */
+    border-radius: 4px;
+}
+
+.app-sub-header{
+    display: flex;
+    flex-direction: row;
+}
+
+
+.profile_img{
+    height: 36px;
+    border-radius: 17px;
+    border: white;
+
+}
+
+.menu-container{
+    margin-top: 30px;
+}
+
+/* .menu-item{
+    background-color: blueviolet;
+    color:red;
+} */
+
+
+.MenuItem.selected { /* Increase the specificity */
+    color: blue;
+}
+
+.MenuItem.background{
+    color: red;
+}
+
+
+button.MuiIconButton-root{
+    padding: 0px;
+    padding-left: 30px;
+    width: 40px;
+}
+
+ul.MuiList-root{
+    background-color: white;
+}
+
+li.MuiListItem-divider{
+    border-color: grey;
+    border-bottom: 2px;
+    border-style: groove;
+    margin: 5px;
+}
+
+.cards-div{
+    display: flex;
+    flex-direction: row;
+}
+
+.hashTags{
+    color: cornflowerblue;
+}
+
+
+
+ul.MuiGridList-root{
+    padding-left: 60px;
+    padding-right: 60px;
+}
+
+.posted-by{
+    width: 40px;
+    height: 40px;
+}
+
+.horizontal-rule-style{
+    height: 1px;
+    color:lightgrey;
+    background-color: lightgrey;
+}
+
+.fav-icon-color{
+    color: red;
+}
+
+.comment-section{
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.MuiFormControl-root{
+    width: 85%;
+}
+
+.comments-show{
+    padding: 16px;
+}
+
+.comment-username{
+    font-weight: bold;
+}
+
+.post-details{
+    display: flex;
+    flex-direction: row;
+}
+
+.food-icon.MuiSvgIcon-root{
+    font-size: xx-large;
+}
+
+.search-icon{
+    color:white;
+}
+
+.search-text.MuiInputBase-root{
+    color:white;
+}
+
+.search-text.MuiInput-underline:after{
+    border-bottom: 2px solid white; 
+}
+
+.tabs {
+    margin-bottom: 20px;
+}
+
+.dispNone {
+    display: none;
+}
+
+.dispBlock {
+    display: block;
+}
+
+.red {
+    color: red;
+}
+
+
+/* .popup-user-button{
+    display: none;
+} */
+
+/* .profile-picture-button.MuiButtonBase-root{
+    display: none;
+}
+ */
+
+ .popup-user-button.MuiButton-contained{
+    background-color: transparent;
+    color: lightgray;
+ }
+
+ .popup-user-button.MuiButton-root{
+     text-transform: none;
+ }
+
+ .popup-user-button.MuiButton-contained{
+     box-shadow: none;
+ }
+
+@media (max-width:1024px ) {
+    .app-header {
+        background-color: #263238;
+        height: 125px;
+        padding: 8px 32px 8px 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .login-button.MuiButtonBase-root{
+        width: 100px;
+    }
+    
+    .search-text.MuiInput-underline:after{
+        border-bottom: 2px solid white; 
+    }
+
+    .popup-user-button.MuiButton-root{
+        width: auto;
+        justify-content: left;
+    }
+
+    .menu-container{
+        margin-top: 50px;
+    }
+    
+ }
