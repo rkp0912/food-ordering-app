@@ -17,6 +17,8 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faStar, faRupeeSign } from '@fortawesome/free-solid-svg-icons'
 
 
 class Home extends Component {
@@ -187,10 +189,12 @@ class Home extends Component {
                                     <span/>
                                     <span/> 
                                     <span>{data.likes.count} Likes</span> */}
-                                    <Button className="like-button" variant="contained" startIcon={<StarRateIcon />}>
-                                        {data.customer_rating} ({data.number_customers_rated})
+                                    <Button className="like-button" variant="contained">
+                                        <span> <FontAwesomeIcon icon={faStar} /> {data.customer_rating}  ({data.number_customers_rated})</span>
                                     </Button>
-                                    &#8377; {data.average_price} for two
+                                    <span>
+                                        <FontAwesomeIcon icon={faRupeeSign} /><span className="avg-price-span-style">{data.average_price} for two</span>
+                                    </span>
                                 </CardActions>
                                 {/* <div className="comments-show" style={{display: data.user_commented ? 'block' : 'none' }}>
                                     <span className="comment-username">{data.user.username}:</span>
