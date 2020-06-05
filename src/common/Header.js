@@ -19,7 +19,6 @@ import Tab from '@material-ui/core/Tab';
 import ReactDOM from 'react-dom';
 import Home from '../home/Home';
 
-
 const customStyles = {
     content: {
         top: '50%',
