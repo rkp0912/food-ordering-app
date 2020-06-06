@@ -1,24 +1,16 @@
 import React, { Component } from 'react';
 import './Home.css';
-import Header from '../common/Header';
-import IconButton from '@material-ui/core/IconButton';
+import Header from '../../common/Header';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
-import Avatar from '@material-ui/core/Avatar';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import FavoriteBorderIcon from '@material-ui/icons/FavoriteBorder';
-import StarRateIcon from '@material-ui/icons/StarRate';
 import CardActions from '@material-ui/core/CardActions';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Input from '@material-ui/core/Input';
 import Button from '@material-ui/core/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faStar, faRupeeSign } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar, faRupeeSign } from '@fortawesome/free-solid-svg-icons';
+
 
 
 class Home extends Component {
@@ -53,18 +45,18 @@ class Home extends Component {
 
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
         let that = this;
         let data = null;
         let xhrMovie = new XMLHttpRequest();
         xhrMovie.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
-                that.setState({
-                    restaurants: JSON.parse(this.responseText).restaurants
-                });
+                    that.setState({
+                        restaurants: JSON.parse(this.responseText).restaurants
+                    });
 
                 // that.getPageData();
-                console.log("componentWillMount :"+this.responseText)
+                //console.log("componentWillMount :"+this.responseText)
             }
         });
 
@@ -93,7 +85,7 @@ class Home extends Component {
                 });
 
                 // that.getPageData();
-                console.log("getAllRestaurants :"+ this.responseText)
+               // console.log("getAllRestaurants :"+ this.responseText)
             }
         });
 
@@ -142,9 +134,9 @@ class Home extends Component {
     componentDidMount=()=>{
         console.log("Window outer width :" +window.outerWidth)
 
-        if(window.outerWidth > 411 && window.outerWidth <= 1024 )
+        if(window.outerWidth > 414 && window.outerWidth <= 1024 )
             this.setState({noOfColumns:2})
-        else if(window.outerWidth <= 411)
+        else if(window.outerWidth <= 414)
             this.setState({noOfColumns:1})
         else
             this.setState({noOfColumns:4})
@@ -155,7 +147,7 @@ class Home extends Component {
             <div>
                 <Header restaurantSubString={this.getRestaurantSearchString}/>
                 <div>
-                <GridList cellHeight={500} cols={this.state.noOfColumns}>
+                <GridList className="grid-list-cards" cellHeight={500} cols={this.state.noOfColumns}>
                     {this.state.restaurants.map(data => (
                         <GridListTile className="grid-item" key={"grid" + data.id} style={{ height: 'auto' }}>
                             <Card className="restaurantCard">
@@ -163,14 +155,6 @@ class Home extends Component {
                                     <img src={data.photo_URL} className="restaurant-image" alt="test" />
                                 </CardMedia>
                                 <CardContent>
-                                    {/* <div>
-                                        {data.caption.text.split("\n")[0]}
-                                    </div>
-                                    <div className="hashTags">
-                                        {data.tags.map(tag =>(
-                                            <span key={data.id+tag}>#{tag} </span>
-                                        ))}
-                                    </div> */}
                                     <div>
                                         <h2 className="restaurantName-heading">{data.restaurant_name}</h2>
                                     </div>
@@ -179,16 +163,6 @@ class Home extends Component {
                                     </div>
                                 </CardContent>
                                 <CardActions className="restaurant-card-actions">
-                                    {/* <IconButton onClick={() => this.likePost(data)}>
-                                        {
-                                            data.user_has_liked === true
-                                            ?<FavoriteIcon className="fav-icon-color"/>
-                                            :<FavoriteBorderIcon/>
-                                        }
-                                    </IconButton>
-                                    <span/>
-                                    <span/> 
-                                    <span>{data.likes.count} Likes</span> */}
                                     <Button className="like-button" variant="contained">
                                         <span> <FontAwesomeIcon icon={faStar} /> {data.customer_rating}  ({data.number_customers_rated})</span>
                                     </Button>
@@ -196,17 +170,6 @@ class Home extends Component {
                                         <FontAwesomeIcon icon={faRupeeSign} /><span className="avg-price-span-style">{data.average_price} for two</span>
                                     </span>
                                 </CardActions>
-                                {/* <div className="comments-show" style={{display: data.user_commented ? 'block' : 'none' }}>
-                                    <span className="comment-username">{data.user.username}:</span>
-                                    <span> {data.user_comments}</span>
-                                </div>
-                                <div className="comment-section">
-                                    <FormControl>
-                                        <InputLabel htmlFor={"inputComment"+data.id}>Add a comment</InputLabel>
-                                        <Input id={"inputComment"+data.id} type="text" inputcomment={this.state.comment} onChange={this.commentTextChangeHandler}/>
-                                    </FormControl>
-                                    <Button variant="contained" color="primary" onClick={() => this.AddCommentClickHandler(data)}>ADD</Button>
-                                </div> */}
                             </Card>
                         </GridListTile>
                     ))}

@@ -36,22 +36,52 @@
     width: 45%;
 }
 
+.like-button.MuiButton-contained:hover{
+    box-shadow: none;
+    background-color: rgb(230, 201, 98);
+}
+
 .like-button.MuiButton-root{
     border-radius: 0px;
+    padding: 0px;
 }
 
 .avg-price-span-style{
     font-weight: 400;
 }
 
-@media (max-width:1024px ) {
+
+.grid-list-cards.ul.MuiGridList-root{
+    padding-left: 30px;
+    padding-right: 0px;
+ }
+
+ .MuiGridListTile-root{
+    width: auto;
+}
+
+
+/* @media (max-width:450 ) {
     .restaurantCard.MuiCard-root{
-        margin:10px;
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
         height: 400px;
-        width: 300px;
      }
-    
+} */
+
+@media (max-width:1024px ) {
+    .restaurantCard.MuiCard-root{
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        height: 400px;
+     }
+
+     @media (max-width:450 ) {
+        .restaurantCard.MuiCard-root{
+            width: 300px;
+        }
+    }
+
 }

@@ -17,7 +17,8 @@ import Modal from 'react-modal';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ReactDOM from 'react-dom';
-import Home from '../home/Home';
+import Home from '../screens/home/Home';
+import Profile from '../screens/profile/profile';
 
 const customStyles = {
     content: {
@@ -70,6 +71,7 @@ class Header extends Component {
             loginPasswordHelperText: "required",
             registrationHelperText: "",
             loginHelperText: "",
+            displayName: sessionStorage.getItem("first-name"),
             searchString: "",
             loggedIn: sessionStorage.getItem("access-token") == null ? false : true
         }
@@ -133,12 +135,13 @@ class Header extends Component {
             if (this.readyState === 4) {
                 if(this.status === 200){
                     sessionStorage.setItem("uuid", JSON.parse(this.responseText).id);
+                    sessionStorage.setItem("first-name", JSON.parse(this.responseText).first_name);
                     sessionStorage.setItem("access-token", xhrLogin.getResponseHeader("access-token"));
                     that.setState({
                         loggedIn: true
                     });
                     that.setState({
-                        username: JSON.parse(this.responseText).first_name
+                        displayName: JSON.parse(this.responseText).first_name
                     })
                     that.closeModalHandler();
                 }
@@ -250,6 +253,12 @@ class Header extends Component {
         this.setState({ contact: e.target.value });
     }
 
+    //when Acccount info button is clicked, make sure session token is set and navigate to profile page.
+    profileHandler = (e) => {
+        // sessionStorage.setItem("access-token", "8661035776.d0fcd39.39f63ab2f88d4f9c92b0862729ee2784");
+        ReactDOM.render(<Profile/>, document.getElementById('root'));
+    }
+
     logoutHandler = (e) => {
 
         let dataLogout = null;
@@ -258,6 +267,7 @@ class Header extends Component {
         xhrLogout.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 sessionStorage.removeItem("uuid");
+                sessionStorage.removeItem("first-name");
                 sessionStorage.removeItem("access-token");
         
                 that.setState({
@@ -331,10 +341,10 @@ class Header extends Component {
                                 {(popupState) => (
                                     <React.Fragment>
                                         <Button  className="popup-user-button" variant="contained" color="default" searchbar={this.state.searchString} startIcon={<AccountCircleIcon />} {...bindTrigger(popupState)}>
-                                            {this.state.username}
+                                            {this.state.displayName}
                                         </Button>
                                         <Menu {...bindMenu(popupState)} className="menu-container">
-                                            <MenuItem onClick={this.profile}>My Profile</MenuItem>
+                                            <MenuItem onClick={this.profileHandler}>My Profile</MenuItem>
                                             <MenuItem onClick={this.logoutHandler}>Logout</MenuItem>
                                         </Menu>
                                     </React.Fragment>
@@ -358,7 +368,7 @@ class Header extends Component {
                         <TabContainer>
                             <FormControl required>
                                 <InputLabel htmlFor="username">Contact No.</InputLabel>
-                                <Input id="username" type="text" username={this.state.username} onChange={this.inputUsernameChangeHandler} />
+                                <Input id="username" type="text" username={this.state.username} value={this.state.username} onChange={this.inputUsernameChangeHandler} />
                                 <FormHelperText className={this.state.usernameRequired}>
                                     <span className="red">{this.state.loginUsernameHelperText}</span>
                                 </FormHelperText>
@@ -366,7 +376,7 @@ class Header extends Component {
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="loginPassword">Password</InputLabel>
-                                <Input id="loginPassword" type="password" loginpassword={this.state.loginPassword} onChange={this.inputLoginPasswordChangeHandler} />
+                                <Input id="loginPassword" type="password" loginpassword={this.state.loginPassword} value={this.state.loginPassword} onChange={this.inputLoginPasswordChangeHandler} />
                                 <FormHelperText className={this.state.loginPasswordRequired}>
                                     <span className="red">required</span>
                                 </FormHelperText>
@@ -386,7 +396,7 @@ class Header extends Component {
                         <TabContainer>
                             <FormControl required>
                                 <InputLabel htmlFor="firstname">First Name</InputLabel>
-                                <Input id="firstname" type="text" firstname={this.state.firstname} onChange={this.inputFirstNameChangeHandler} />
+                                <Input id="firstname" type="text" firstname={this.state.firstname} value={this.state.firstname} onChange={this.inputFirstNameChangeHandler} />
                                 <FormHelperText className={this.state.firstnameRequired}>
                                     <span className="red">required</span>
                                 </FormHelperText>
@@ -394,12 +404,12 @@ class Header extends Component {
                             <br /><br />
                             <FormControl>
                                 <InputLabel htmlFor="lastname">Last Name</InputLabel>
-                                <Input id="lastname" type="text" lastname={this.state.lastname} onChange={this.inputLastNameChangeHandler} />
+                                <Input id="lastname" type="text" lastname={this.state.lastname} value={this.state.lastname} onChange={this.inputLastNameChangeHandler} />
                             </FormControl>
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="email">Email</InputLabel>
-                                <Input id="email" type="text" email={this.state.email} onChange={this.inputEmailChangeHandler} />
+                                <Input id="email" type="text" email={this.state.email} value={this.state.email} onChange={this.inputEmailChangeHandler} />
                                 <FormHelperText className={this.state.emailRequired}>
                                     <span className="red">{this.state.emailHelperText}</span>
                                 </FormHelperText>
@@ -407,7 +417,7 @@ class Header extends Component {
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="registerPassword">Password</InputLabel>
-                                <Input id="registerPassword" type="password" registerpassword={this.state.registerPassword} onChange={this.inputRegisterPasswordChangeHandler} />
+                                <Input id="registerPassword" type="password" registerpassword={this.state.registerPassword} value={this.state.registerPassword} onChange={this.inputRegisterPasswordChangeHandler} />
                                 <FormHelperText className={this.state.registerPasswordRequired}>
                                     <span className="red">{this.state.passwordHelperText}</span>
                                 </FormHelperText>
@@ -415,7 +425,7 @@ class Header extends Component {
                             <br /><br />
                             <FormControl required>
                                 <InputLabel htmlFor="contact">Contact No.</InputLabel>
-                                <Input id="contact" type="text" contact={this.state.contact} onChange={this.inputContactChangeHandler} />
+                                <Input id="contact" type="text" contact={this.state.contact} value={this.state.contact} onChange={this.inputContactChangeHandler} />
                                 <FormHelperText className={this.state.contactRequired}>
                                     <span className="red">{this.state.contactHelpText}</span>
                                 </FormHelperText>
