@@ -48,8 +48,8 @@ class Home extends Component {
     UNSAFE_componentWillMount() {
         let that = this;
         let data = null;
-        let xhrMovie = new XMLHttpRequest();
-        xhrMovie.addEventListener("readystatechange", function () {
+        let xhrRestaurant = new XMLHttpRequest();
+        xhrRestaurant.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                     that.setState({
                         restaurants: JSON.parse(this.responseText).restaurants
@@ -60,9 +60,10 @@ class Home extends Component {
             }
         });
 
-        xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
-        xhrMovie.setRequestHeader("Cache-Control", "no-cache");
-        xhrMovie.send(data);
+        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
+        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant");
+        xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
+        xhrRestaurant.send(data);
     }
 
 
@@ -77,8 +78,8 @@ class Home extends Component {
     getAllRestaurants() {
         let that = this;
         let data = null;
-        let xhrMovie = new XMLHttpRequest();
-        xhrMovie.addEventListener("readystatechange", function () {
+        let xhrRestaurant = new XMLHttpRequest();
+        xhrRestaurant.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 that.setState({
                     restaurants: JSON.parse(this.responseText).restaurants
@@ -89,16 +90,17 @@ class Home extends Component {
             }
         });
 
-        xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
-        xhrMovie.setRequestHeader("Cache-Control", "no-cache");
-        xhrMovie.send(data);
+        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
+        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant");
+        xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
+        xhrRestaurant.send(data);
     }
 
     getRestaurantByName(){
         let that = this;
         let data = null;
-        let xhrMovie = new XMLHttpRequest();
-        xhrMovie.addEventListener("readystatechange", function () {
+        let xhrRestaurant = new XMLHttpRequest();
+        xhrRestaurant.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 if(this.status === 200){
                     console.log("RKP: "+JSON.parse(this.responseText).restaurants)
@@ -126,9 +128,10 @@ class Home extends Component {
             }
         });
 
-        xhrMovie.open("GET", "http://localhost:8080/api/restaurant/name/"+this.state.searchString);
-        xhrMovie.setRequestHeader("Cache-Control", "no-cache");
-        xhrMovie.send(data);
+        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant/name/"+this.state.searchString);
+        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant/name/"+this.state.searchString);
+        xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
+        xhrRestaurant.send(data);
     }
 
     componentDidMount=()=>{
@@ -142,6 +145,13 @@ class Home extends Component {
             this.setState({noOfColumns:4})
     }
 
+    //Open restaurant details when clicked    
+    goToDetailsPage = (retaurant) =>{
+        this.props.history.push('/restaurant/' + retaurant.id);
+        console.log(retaurant.id);
+    }
+    
+
     render(){ 
         return(
             <div>
@@ -149,7 +159,7 @@ class Home extends Component {
                 <div>
                 <GridList className="grid-list-cards" cellHeight={500} cols={this.state.noOfColumns}>
                     {this.state.restaurants.map(data => (
-                        <GridListTile className="grid-item" key={"grid" + data.id} style={{ height: 'auto' }}>
+                        <GridListTile className="grid-item" key={"grid" + data.id} style={{ height: 'auto' }}  onClick={()=>this.goToDetailsPage(data)}>
                             <Card className="restaurantCard">
                                 <CardMedia className="restaurantCardMedia">
                                     <img src={data.photo_URL} className="restaurant-image" alt="test" />

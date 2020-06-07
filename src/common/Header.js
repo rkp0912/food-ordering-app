@@ -18,7 +18,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import ReactDOM from 'react-dom';
 import Home from '../screens/home/Home';
-import Profile from '../screens/profile/profile';
+import { withRouter } from 'react-router-dom';
 
 const customStyles = {
     content: {
@@ -254,9 +254,12 @@ class Header extends Component {
     }
 
     //when Acccount info button is clicked, make sure session token is set and navigate to profile page.
-    profileHandler = (e) => {
-        // sessionStorage.setItem("access-token", "8661035776.d0fcd39.39f63ab2f88d4f9c92b0862729ee2784");
-        ReactDOM.render(<Profile/>, document.getElementById('root'));
+    profileHandler = () => {
+        // ReactDOM.render(<Profile/>, document.getElementById('root'));
+        console.log(sessionStorage.getItem("access-token"));
+        this.props.history.push('/profile');
+
+        
     }
 
     logoutHandler = (e) => {
@@ -274,7 +277,8 @@ class Header extends Component {
                     loggedIn: false,
                     username: ""
                 });
-                ReactDOM.render(<Home/>, document.getElementById('root'));
+                // ReactDOM.render(<Home/>, document.getElementById('root'));
+                that.props.history.push('/');
                 console.log(JSON.parse(this.responseText))
             }
         });
@@ -344,7 +348,7 @@ class Header extends Component {
                                             {this.state.displayName}
                                         </Button>
                                         <Menu {...bindMenu(popupState)} className="menu-container">
-                                            <MenuItem onClick={this.profileHandler}>My Profile</MenuItem>
+                                            <MenuItem onClick={this.profileHandler.bind(this)}>My Profile</MenuItem>
                                             <MenuItem onClick={this.logoutHandler}>Logout</MenuItem>
                                         </Menu>
                                     </React.Fragment>
@@ -453,4 +457,4 @@ class Header extends Component {
     }
 }
 
-export default Header;
+export default withRouter(Header);
