@@ -16,8 +16,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Modal from 'react-modal';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import ReactDOM from 'react-dom';
-import Home from '../screens/home/Home';
 import { withRouter } from 'react-router-dom';
 
 const customStyles = {
@@ -292,6 +290,7 @@ class Header extends Component {
     }
 
     inputSearchStringChangeHandler = (e) => {
+        console.log(this.props.showSearchBar);
         this.setState({ searchString: e.target.value });
         console.log(this.state.searchString)
         this.props.restaurantSubString(this.state.searchString);    
@@ -323,16 +322,18 @@ class Header extends Component {
             <div>
                 <header className="app-header">
                     <label className="app-text"><FastfoodIcon className="food-icon"/></label>
-                    <div className="app-sub-header">
-                        <div className="search-div">
-                            <div className="search-icon">
-                                <SearchIcon/>
+                    {this.props.showSearchBar === "false"?"":
+                        <div className="app-sub-header">
+                            <div className="search-div">
+                                <div className="search-icon">
+                                    <SearchIcon/>
+                                </div>
+                                <FormControl>
+                                    <Input id="username" className="search-text" type="text" placeholder="Search by Restaurant Name" onChange={this.inputSearchStringChangeHandler}/>
+                                </FormControl>
                             </div>
-                            <FormControl>
-                                <Input id="username" className="search-text" type="text" placeholder="Search by Restaurant Name" onChange={this.inputSearchStringChangeHandler}/>
-                            </FormControl>
                         </div>
-                    </div>
+                    }
                     {/* When no user user is logged in display login button */}
                     {this.state.loggedIn === false &&
                         <Button className="login-button" variant="contained" startIcon={<AccountCircleIcon />} onClick={this.openModalHandler}>

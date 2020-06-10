@@ -147,6 +147,7 @@ class Home extends Component {
 
     //Open restaurant details when clicked    
     goToDetailsPage = (retaurant) =>{
+        this.props.history.push({test : false})
         this.props.history.push('/restaurant/' + retaurant.id);
         console.log(retaurant.id);
     }

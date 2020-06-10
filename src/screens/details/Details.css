@@ -1,0 +1,217 @@
+.restaurant-details{
+    display: flex;
+    /* justify-content: center; */
+    background-color:lightgray;
+    /* width: 100%; */
+}
+
+.restaurant-image-thumbnail{
+    width: 200px;
+    height: 180px;
+    margin: 10px;
+}
+
+.restaurant-details-info{
+    margin: 10px;
+    margin-left: 2%;
+    width: 40%;
+}
+
+.restaurant-name-label{
+    font-size: x-large;
+    font-weight: 400;
+}
+
+
+.rating-price-div-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.rating-price-div{
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-around; */
+}
+
+.rating-price-label{
+    color:gray;
+    width: 160px
+}
+
+.restaurant-menu-cart-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.restaurant-menu{
+    width: 50%;
+    margin: 3%;
+}
+
+.item-category{
+    color:black;
+    text-transform: uppercase;
+    padding: 5px;
+}
+
+.menu-item{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin:10px;
+    font-weight: 600;
+    padding: 5px;
+}
+
+.menu-item-type{
+    width: 40%;
+}
+
+.circle-size{
+    font-size: 10px;
+}
+
+.item-name-text-span{
+    margin-left: 10px;
+}
+
+.cartCard{
+    width: 400px;
+    margin: 10%;
+    padding: 5%;
+}
+
+.cart-name-span{
+    margin-left: 20px;
+    font-weight: bold;
+    font-size: large;
+}
+
+.bill-amount-div{
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.checkout-button{
+    width: 100%;
+}
+
+.cart-item{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: grey;
+}
+
+.cart-item-remove-button.MuiIconButton-root{
+    padding: 0px;
+    color: black;
+    font-weight: bold;
+}
+
+.cart-item-add-button.MuiIconButton-root{
+    padding: 0px;
+    color: black;
+    font-weight: bold;
+}
+
+
+.cart-item-quantity-label{
+    color: black;
+    font-weight: bold;
+}
+
+.cart-item-name-span{
+    width: 50%;
+}
+
+.cart-item-qunatity-div{
+    width: 25%;
+}
+
+/* .cart-item-price-span{
+    width: 35%;
+} */
+
+button.MuiIconButton-root {
+    padding: 0px;
+    padding-left: 0px;
+    width: 40px;
+}
+
+
+@media (max-width:1024px ) {
+    .restaurant-details{
+        display: flex;
+        flex-direction: column;
+        /* justify-content: center; */
+        background-color:lightgray;
+        /* width: 100%; */
+    }
+
+    .restaurant-image-thumbnail{
+        width: 200px;
+        height: 180px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+
+    .restaurant-details-info{
+        margin: 10px;
+        margin-left: 2%;
+        width: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .restaurant-name-label{
+        font-size: x-large;
+        font-weight: 400;
+        text-align: center;
+    }
+    
+    .restaurant-locality-div{
+        text-align: center;
+    }
+
+    .restaurant-category-div{
+        text-align: center;
+    }
+
+    .rating-price-div-container{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: center;
+        width: 100%;
+        margin: 10px;
+    }
+
+    button.MuiIconButton-root {
+        padding: 0px;
+        padding-left: 0px;
+        width: 40px;
+    }
+
+    .restaurant-menu-cart-container{
+        display: flex;
+        flex-direction: column; 
+    }
+
+    .restaurant-menu{
+        width: auto;
+        margin: 3%;
+    }
+    
+
+    .cartCard{
+        width: auto;
+        margin: 10%;
+        padding: 5%;
+    }
+}
