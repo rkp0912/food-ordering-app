@@ -30,7 +30,11 @@ import Input from '@material-ui/core/Input';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Snackbar from "@material-ui/core/Snackbar";
+import CloseIcon from '@material-ui/icons/Close';
   
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -54,9 +58,12 @@ class Checkout extends Component {
             steps:[
                 "Delivery", "Payment"
             ],
+            stepperActiveStep: 0,
             value: 0,
             address:[],
-            addressSelected:{},
+            addressSelected:{
+                id:""
+            },
             cartItemsCount:0,
             cartList:[],
             cartTotalAmount:0.00,
@@ -77,7 +84,18 @@ class Checkout extends Component {
             state_uuid:"",
             pincodeRequired:"dispNone",
             pincode:"",
-            pincodeHelperText:"required"
+            pincodeHelperText:"required",
+            paymentModes:[],
+            paymentSelected:{
+                id:""
+            },
+            coupon:{
+                id:""
+            },
+            snackbarText:"",
+            snackbarStatus: false,
+            discountValue:0,
+            amountPayable:0
         }
     }
 
@@ -105,10 +123,12 @@ class Checkout extends Component {
     componentDidMount() {
         if(this.props.location.orderSummary == null)
             return; 
-        console.log(this.props.location.orderSummary);
+        console.log(this.props.location.orderSummary.cartList);
         this.setState({restaurant_name: this.props.location.orderSummary.restaurantDetails.restaurant_name})
         this.setState({cartList: this.props.location.orderSummary.cartList})
         this.setState({cartTotalAmount: this.props.location.orderSummary.cartTotalAmount})
+        //Get Coupon
+        this.getCoupon();
     }
 
     switchAddressTabs = (event, value) => {
@@ -195,6 +215,30 @@ class Checkout extends Component {
         xhrStates.send(dataStates);
     }
 
+    getPaymentModes(){
+        let dataPayment = null;
+        let xhrPaymentMode = new XMLHttpRequest();
+        let that = this;
+        xhrPaymentMode.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.responseText)
+                if(this.status === 200){
+                    that.setState({
+                        paymentModes: JSON.parse(this.responseText).paymentMethods
+                    })   
+                    console.log(that.state.paymentModes);
+                }
+            }
+        });
+
+        // xhrStates.open("GET", this.props.baseUrl + "payment/");
+        xhrPaymentMode.open("GET", "http://localhost:8080/api/payment");
+        // xhrStates.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
+        xhrPaymentMode.setRequestHeader("Content-Type", "application/json");
+        xhrPaymentMode.setRequestHeader("Cache-Control", "no-cache");
+        xhrPaymentMode.send(dataPayment);
+    }
+
 
     saveAddressHandler = () => {
 
@@ -256,11 +300,6 @@ class Checkout extends Component {
                     that.clearAddressTable();
                     
                }
-               else{
-                    // that.setState({
-                    //     registrationHelperText: JSON.parse(this.responseText).message
-                    // });
-               }
                console.log(JSON.parse(this.responseText));
             }
         });
@@ -304,6 +343,180 @@ class Checkout extends Component {
         this.setState({ pincode: e.target.value });
     }
 
+    handleStepper = (stepIndex) => {
+        console.log(this.state.addressSelected)
+        if(this.state.addressSelected.id === ""){
+            alert("Selected valid address")
+            return;
+        }
+        if(stepIndex === 2){
+            if(this.state.paymentSelected.id === ""){
+                alert("Select payment method")
+                return;
+            }
+        }
+        this.setState({stepperActiveStep : stepIndex });
+        if(stepIndex === 1){
+             this.getPaymentModes();
+        }
+    }
+
+    // handleBack = (stepIndex) => {
+    //     this.setState({stepperActiveStep : stepIndex });
+    //     if(stepIndex === 1){
+    //         // this.getPaymentModes();
+    //     }
+    // }
+
+
+    paymentModeSelectionHandler = (event) =>{
+
+        // paymentSelected
+
+        let mode = {
+            id:""
+        }
+        mode.id = event.target.value;
+        // this.setState({...this.state.paymentSelected, id: event.target.value });
+        this.setState({paymentSelected : event.target.value})
+        sessionStorage.setItem("payment_id", event.target.value);
+        console.log(sessionStorage.getItem("payment_id"))
+    }
+
+
+    getCoupon = () =>{
+        let dataCoupon = null;
+        let xhrCoupon = new XMLHttpRequest();
+        let that = this;
+        xhrCoupon.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                if(this.status === 200){
+                    that.setState({
+                        coupon: JSON.parse(this.responseText)
+                    })   
+                    console.log(that.state.coupon);
+                    //calculate discount @ 50%
+                    let discAmt = that.state.cartTotalAmount * .5;
+                    that.setState({discountValue : discAmt})
+                    that.setState({amountPayable : discAmt})
+                }
+            }
+        });
+
+        xhrCoupon.open("GET", this.props.baseUrl + "order/coupon/FLAT50");
+        xhrCoupon.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
+        // xhrCoupon.setRequestHeader("coupon_name", "FLAT50");
+        xhrCoupon.setRequestHeader("Content-Type", "application/json");
+        xhrCoupon.setRequestHeader("Cache-Control", "no-cache");
+        xhrCoupon.send(dataCoupon);
+
+    }
+
+    orderHander = () => {
+
+        // this.setState({ snackbarStatus: true });
+
+        if(this.state.addressSelected.id === ""){
+            alert("Selected valid address")
+            return;
+        }
+        
+        if(this.state.paymentSelected.id === ""){
+            alert("Select payment method")
+            return;
+        }
+
+        // {
+        //     "address_id": "string",
+        //     "bill": 0,
+        //     "coupon_id": "string",
+        //     "discount": 0,
+        //     "item_quantities": [
+        //       {
+        //         "item_id": "string",
+        //         "price": 0,
+        //         "quantity": 0
+        //       }
+        //     ],
+        //     "payment_id": "string",
+        //     "restaurant_id": "string"
+        //   }
+
+         let cartList=[];
+        //  let item = {
+        //      item_id:"",
+        //      price:0,
+        //      quantity:0
+        //  }
+
+        for(let item of this.props.location.orderSummary.cartList){
+            let cartItem = {
+                item_id:"",
+                price:0,
+                quantity:0
+            }
+   
+            cartItem.item_id = item.id;
+            cartItem.price = item.price;
+            cartItem.quantity = item.quantity;
+            cartList.push(cartItem);
+        }
+
+      //this.props.location.orderSummary.cartList
+        let dataOrder = JSON.stringify({
+            "address_id": this.state.addressSelected.id,
+            "bill": this.state.cartTotalAmount,
+            "coupon_id": this.state.coupon.id,
+            "discount": 0,
+            "item_quantities":  cartList,
+            "payment_id": sessionStorage.getItem("payment_id"),
+            "restaurant_id": this.props.location.orderSummary.restaurantDetails.id
+        });
+
+        console.log(dataOrder);
+
+        let xhrSaveAddress = new XMLHttpRequest();
+        let that = this;
+        xhrSaveAddress.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+               if(this.status === 201){
+                    that.setState({snackbarText : "Order placed successfully! Your order ID is " +JSON.parse(this.responseText).id });
+                    that.setState({snackbarStatus : true});
+                    
+               }
+               else{
+                
+                that.setState({snackbarText : "Unable to place your order! Please try again!"});
+                that.setState({snackbarStatus : true});
+               }
+               console.log(JSON.parse(this.responseText));
+            }
+        });
+
+        xhrSaveAddress.open("POST", "http://localhost:8080/api/order");
+        //xhrSaveAddress.open("GET", this.props.baseUrl + "states/");
+        xhrSaveAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
+        xhrSaveAddress.setRequestHeader("Content-Type", "application/json");
+        xhrSaveAddress.setRequestHeader("Cache-Control", "no-cache");
+        xhrSaveAddress.send(dataOrder);
+    } 
+
+    closeSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+    
+        this.setState({ snackbarStatus: false });
+    }
+    
+
+    
+    openSnackar = (value) => {
+        this.setState({ snackbarText: value});
+        this.setState({ snackbarStatus: true });
+    };
+
+
 
     render(){
         return(
@@ -311,13 +524,12 @@ class Checkout extends Component {
                 <Header showSearchBar="false"/>
                 <div className="checkout-div">
                     <div className="address-div">
-                        <Stepper  orientation="vertical">
-                            {this.state.steps.map((label, index) => {
-                            return (
+                        <Stepper activeStep={this.state.stepperActiveStep}  orientation="vertical">
+                            {this.state.steps.map((label, index) => (
                                 <Step>
                                     <StepLabel>{label}</StepLabel>
                                     <StepContent>
-                                        <div>
+                                        <div style={{display: this.state.stepperActiveStep === 0 ? "block" : "none"}}>
                                             <AppBar position="static">
                                                 <Tabs value={this.state.value} onChange={this.switchAddressTabs} aria-label="simple tabs example">
                                                     <Tab label="EXISTING ADDRESS"/>
@@ -412,11 +624,48 @@ class Checkout extends Component {
                                                 </div>
                                             }
                                         </div>
+                                        <div style={{display: this.state.stepperActiveStep === 1 ? "block" : "none"}}>
+                                            <div className="payment-div">
+                                                <div>
+                                                    <label className="payment-mode-header">Select Mode of Payment</label>
+                                                    <br/>
+                                                    {this.state.paymentModes.length > 0
+                                                    ?<RadioGroup value={this.state.paymentMode} onChange={this.paymentModeSelectionHandler}>
+                                                        {this.state.paymentModes.map((mode) =>(
+                                                            <FormControlLabel className="payment-mode-form-label" value={mode.id} control={<Radio />}  label={mode.payment_name} />
+                                                        ))}
+                                                    </RadioGroup>
+                                                    :""
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Button
+                                                disabled={this.state.stepperActiveStep === 0}
+                                                onClick={() => this.handleStepper(0)}
+                                                // className={classes.button}
+                                            >
+                                                Back
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                color="primary"
+                                                onClick={ this.state.stepperActiveStep === 0 ? () => this.handleStepper(1) : () => this.handleStepper(2)}
+                                                // className={classes.button}
+                                            >
+                                                {this.state.stepperActiveStep === 1? 'Finish' : 'Next'}
+                                            </Button>
+                                        </div>
                                     </StepContent>
                                 </Step>
-                            );
-                            })}
+                            ))}
                         </Stepper>
+                        <div  className="end-msg-div" style={{display: this.state.stepperActiveStep === 2 ? "block" : "none"}}>
+                                <span className="end-message-span">View the summary & place your order now!</span>
+                                <br></br>
+                                <Button className="change-order-button">Change</Button>
+                        </div>
                     </div>
                     <div className="final-cart">
                         <Card className="cartCard">
@@ -440,16 +689,61 @@ class Checkout extends Component {
                                     <span className="cart-item-price-span"><FontAwesomeIcon icon={faRupeeSign}/> {cartItem.price}</span>
                                 </div>
                             ))}
+
+                            {this.state.coupon.id === "" ? <div/>
+                            :<div>
+                                <div className="coupon-container-div">
+                                    <div className="coupon-details-div">
+                                        <label className="coupon-heading-label">Coupon Code</label>
+                                        <label className="coupon-code-value">FLAT 50</label>
+                                    </div>
+                                    <Button className="apply-button">
+                                        Apply
+                                    </Button>
+                                </div>
+                                <div className="net-amount-div">
+                                    <span className="sub-total-label">Sub Total</span>
+                                    <span> <FontAwesomeIcon className="inr-icon-color" icon={faRupeeSign}/> {this.state.cartTotalAmount}</span>
+                                </div>
+                                <div className="net-amount-div">
+                                    <span className="sub-total-label">Discount</span>
+                                    <span> <FontAwesomeIcon className="inr-icon-color" icon={faRupeeSign}/> {this.state.discountValue}</span>
+                                </div>
+                            </div>
+                            }
                             <Divider />
                             <div className="net-amount-div">
                                 <span>Net Amount</span>
-                                <span> <FontAwesomeIcon className="inr-icon-color" icon={faRupeeSign}/> {this.state.cartTotalAmount}</span>
+                                <span> <FontAwesomeIcon className="inr-icon-color" icon={faRupeeSign}/> {this.state.amountPayable}</span>
                             </div>
                             <br/>
-                            <Button className="checkout-button" variant="contained" color="primary" onClick={this.checkoutCart}>PLACE ORDER</Button>
+                            <Button className="checkout-button" variant="contained" color="primary" onClick={this.orderHander}>PLACE ORDER</Button>
                         </Card>
                     </div>
                 </div>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.snackbarStatus}
+                    autoHideDuration={3000}
+                    onClose={this.closeSnackBar}
+                    // ContentProps={{
+                    //     'aria-describedby': 'message-id',
+                    // }}
+                    message={<span id="message-id">{this.state.snackbarText}</span>}
+                    action={[
+                        <IconButton
+                        key="close"
+                        aria-label="Close"
+                        color="inherit"
+                        onClick={this.closeSnackBar}
+                        >
+                        <CloseIcon />
+                    </IconButton>,
+                    ]}
+                />
             </div>
         )
     };
