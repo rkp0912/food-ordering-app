@@ -316,6 +316,9 @@ class Header extends Component {
         // }
     }
 
+    componentWillMount = () =>{
+        console.log(sessionStorage.getItem("access-token"));
+    }
 
     render(){        
         return(

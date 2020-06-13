@@ -1,0 +1,122 @@
+.address-grid-list.ul.MuiGridList-root {
+    padding-left: 60px;
+    padding-right: 60px;
+    height: 300px;
+}
+
+.address-grid-list.MuiGridListTile-tile {
+    height: 100%;
+    display: block;
+    overflow: hidden;
+    position: relative;
+    margin: 5%;
+    border: red;
+    border-left: 10px;
+    border: 1px solid;
+    box-shadow: red;
+    border-radius: 3px;
+    box-shadow: 5px 5px rgba(245, 0, 87, 0.84);
+    padding: 10px;
+}
+
+.selection-btn.MuiButtonBase-root{
+    float: right;
+}
+
+.checkout-div{
+    display: flex;
+    flex-direction: row;
+}
+
+.address-div{
+    width: 60%;
+}
+
+.final-cart{
+    /* margin-right: 7%; */
+    width: 25%;
+}
+
+.cart-summary-name-span{
+    font-size: large;
+}
+
+
+.address-card{
+    margin: 3%;
+    padding: 5%;
+}
+
+.address-grid-list.MuiGridListTile-tile{
+    margin : 5%;
+    width: 150px;
+    /* height: 200px; */
+}
+
+
+/* .ul.MuiGridList-root{
+    height: 250px;
+} */
+
+
+.address-grid-list.MuiGridList-root{
+    height: 250px;
+    padding: 0px;
+    margin: 30px;
+}
+
+.no-address-msg-div{
+    margin: 20px 20px;
+    color: grey;
+}
+
+
+.addSelector{
+}
+
+.summary-cart-name-span{
+    margin-left: 10px;
+    font-size: x-large;
+}
+
+.summary-cart-resturant-name-span{
+    margin-left: 10px;
+    font-size: large;
+}
+
+.summary-cart-item-quantity-label{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: grey;
+}
+
+
+.summary-cart-item{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: grey;
+    margin: 10px;
+}
+
+.net-amount-div{
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin: 10px 10px;
+}
+
+.inr-icon-color{
+    color: grey;
+}
+
+.delivery-address-div{
+    height: 300px;
+}
+
+
+.address-form-control{
+    width: 30%;
+    margin: 5px;
+}

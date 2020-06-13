@@ -253,8 +253,6 @@ class Details extends Component {
     };
 
 
-
-
     closeSnackBar = (event, reason) => {
     if (reason === 'clickaway') {
         return;
@@ -263,6 +261,26 @@ class Details extends Component {
     this.setState({ snackbarStatus: false });
     }
     
+
+    checkoutCart = () =>{
+        // this.props.history.push('/checkout/');
+        if(sessionStorage.getItem("access-token") == null){
+            alert("Customer not loggedin")
+            return;
+        }
+
+        if(this.state.cartItemsCount === 0){
+            alert("No items added to the cart")
+            return;
+        }
+
+        this.props.history.push({
+            pathname: '/checkout/',
+            orderSummary: this.state
+        })
+    }
+
+
 
     render(){ 
 
@@ -347,7 +365,7 @@ class Details extends Component {
                                     <span> <FontAwesomeIcon icon={faRupeeSign}/> {this.state.cartTotalAmount}</span>
                                 </div>
                                 <br/>
-                                <Button className="checkout-button" variant="contained" color="primary" onClick={this.registerClickHandler}>CHECKOUT</Button>
+                                <Button className="checkout-button" variant="contained" color="primary" onClick={this.checkoutCart}>CHECKOUT</Button>
                             </Card>
                         </div>
                     </div>
