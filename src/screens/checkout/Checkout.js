@@ -140,6 +140,10 @@ class Checkout extends Component {
     //Register sizing of no of columns based on resize event.
     //Get the props received from Details page.
     componentDidMount() {
+        if(sessionStorage.getItem("access-token") == null){
+            this.props.history.push('/');
+        }
+
         this.getAddressOfCustomer();
         this.updateDimensions();
         window.addEventListener("resize", this.updateDimensions);
