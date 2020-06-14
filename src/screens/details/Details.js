@@ -15,9 +15,10 @@ import Badge from '@material-ui/core/Badge';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import Button from '@material-ui/core/Button';
 
-
+//This is a details page.
+//Page will be displayed on clicking a restaurant card in the Home page.
 class Details extends Component {
-    
+    //Maintain the state of the page
     constructor() {
         super();
         this.state = {
@@ -92,6 +93,7 @@ class Details extends Component {
         } 
     }
 
+    //Invoked after the page load and gets all restautant information by name using /restaurant/{restaurant_id} API
     componentDidMount() {
         let that = this;
         let data = null;
@@ -117,7 +119,7 @@ class Details extends Component {
         xhrRestaurant.send(data);
     }
 
-
+    //Method gets the categories of food served by the resturant.
     getRestaurantCategoryList = () =>{
         // this.setState({categoryList: ""})
         for(let category of this.state.restaurantDetails.categories){
@@ -131,6 +133,7 @@ class Details extends Component {
         }
     }
 
+    //Adds the item to the cart when + button is clicked.
     addItemToCart = (addItem, value) => {
         console.log(addItem);
 
@@ -139,17 +142,7 @@ class Details extends Component {
         let total = 0.00;
 
         console.log(this.state.cartList + this.state.cartList.length);
-        //List is empty
-        // if(this.state.cartList[0].id === ""){
-        //     let itemToBeAdded = this.state.cartList[0];
-        //     itemToBeAdded.id = addItem.id;
-        //     itemToBeAdded.item_type = addItem.item_type;
-        //     itemToBeAdded.item_name = addItem.item_name;
-        //     itemToBeAdded.quantity = 1;
-        //     itemToBeAdded.price = addItem.price;
-        //     total = addItem.price;
-        //     tempCartList.push(itemToBeAdded);
-        // }
+        //If cart is empty
         if(this.state.cartList.length === 0){
             let newItem = {
                 id: "",
@@ -172,15 +165,17 @@ class Details extends Component {
                 let itemToBeAdded = item;
                 if(itemToBeAdded.id === addItem.id){
                     itemAdded = true;
-                    //Get per unit price.
+                    //Get per unit price. 
+                    //This calculation is need bacause, when the instance is passed from the cart, it will have price which is price*no of items
+                    //So, to get the appropriate price of the item amount/quantity
                     let perUnitPrice = itemToBeAdded.price / itemToBeAdded.quantity;
-
                     itemToBeAdded.quantity = itemToBeAdded.quantity + 1;
                     itemToBeAdded.price = itemToBeAdded.quantity * perUnitPrice;
                 }
                 total = total + itemToBeAdded.price;
                 tempCartList.push(itemToBeAdded);
             }
+            //If cart is not empty, add a new item to the cart.
             if(itemAdded === false){
                 let newItem = {
                     id: "",
@@ -213,7 +208,7 @@ class Details extends Component {
 
     };
     
-
+    //Removes item from the cart when "-" is clicked.
     removeItemFromCart = (removeItem, value) => {
         console.log(removeItem);
 
@@ -253,7 +248,7 @@ class Details extends Component {
 
     };
 
-
+    //Closes the snackbar by updating snackbarStatus variable
     closeSnackBar = (event, reason) => {
     if (reason === 'clickaway') {
         return;
@@ -262,7 +257,7 @@ class Details extends Component {
     this.setState({ snackbarStatus: false });
     }
     
-
+    //Checks if user is logged in and cart is not empty before checkout. Passes the ordersummary to checkout page.
     checkoutCart = () =>{
         // this.props.history.push('/checkout/');
         if(sessionStorage.getItem("access-token") == null){
@@ -380,9 +375,6 @@ class Details extends Component {
                     open={this.state.snackbarStatus}
                     autoHideDuration={3000}
                     onClose={this.closeSnackBar}
-                    // ContentProps={{
-                    //     'aria-describedby': 'message-id',
-                    // }}
                     message={<span id="message-id">{this.state.snackbarText}</span>}
                     action={[
                         <IconButton
