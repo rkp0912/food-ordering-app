@@ -29,7 +29,9 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Snackbar from "@material-ui/core/Snackbar";
 import CloseIcon from '@material-ui/icons/Close';
-  
+
+
+//Style for states drop down when adding new address in the delivery-payment wizard/stepper.
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
@@ -42,9 +44,9 @@ const MenuProps = {
     },
 };
 
-
+//Displays checkout page.
 class Checkout extends Component {
-
+    //Maintains the state of the page.
     constructor(){
         super();
         this.state = {
@@ -95,6 +97,7 @@ class Checkout extends Component {
         this.updateDimensions = this.updateDimensions.bind(this);
     }
 
+    //Clears new address fields form
     clearAddressTable= () =>{
         this.setState({
             flatNameRequired:"dispNone",
@@ -116,6 +119,7 @@ class Checkout extends Component {
         })
     }
 
+    //Updates the no of columns in the single row grid on window size.
      updateDimensions() {
         // console.log("width: " + window.innerWidth + " height: "+ window.innerHeight);
         if(window.innerWidth < 1024){
@@ -127,12 +131,14 @@ class Checkout extends Component {
         console.log(this.state.noOfCols)
       }
 
-
+    //Cleanup - Ungreister listening to resize event.
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimensions);
     }
 
-
+    //Get all the address of the customer loggedin
+    //Register sizing of no of columns based on resize event.
+    //Get the props received from Details page.
     componentDidMount() {
         this.getAddressOfCustomer();
         this.updateDimensions();
@@ -148,6 +154,7 @@ class Checkout extends Component {
         this.getCoupon();
     }
 
+    //Swiches between existing address and new address tabs
     switchAddressTabs = (event, value) => {
         this.setState({ value });
         if(value === 1){
@@ -155,7 +162,7 @@ class Checkout extends Component {
         }
     }
 
-
+    //Gets the addresses of the customer /address/customer/ API
     getAddressOfCustomer = () =>{
         let dataAddress = null;
         let xhrAddress = new XMLHttpRequest();
@@ -173,7 +180,6 @@ class Checkout extends Component {
         });
 
         xhrAddress.open("GET", this.props.baseUrl + "address/customer");
-        console.log(this.props.baseUrl + "address/customer");
         xhrAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrAddress.setRequestHeader("Content-Type", "application/json");
         xhrAddress.setRequestHeader("Cache-Control", "no-cache");
@@ -181,12 +187,12 @@ class Checkout extends Component {
     }
 
 
-
+    //Handles the address selection.
     addressSelectionHandler = (addressSelected) =>{
         this.setState({addressSelected})
     }
 
-
+    //Gets all the states using /states API
     getAllStates(){
         let dataStates = null;
         let xhrStates = new XMLHttpRequest();
@@ -204,13 +210,12 @@ class Checkout extends Component {
         });
 
         xhrStates.open("GET", this.props.baseUrl + "states/");
-        // xhrStates.open("GET", "http://localhost:8080/api/states");
-        // xhrStates.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrStates.setRequestHeader("Content-Type", "application/json");
         xhrStates.setRequestHeader("Cache-Control", "no-cache");
         xhrStates.send(dataStates);
     }
 
+    //Get all the payment methods from /payment API
     getPaymentModes(){
         let dataPayment = null;
         let xhrPaymentMode = new XMLHttpRequest();
@@ -228,14 +233,13 @@ class Checkout extends Component {
         });
 
         xhrPaymentMode.open("GET", this.props.baseUrl + "payment/");
-        // xhrPaymentMode.open("GET", "http://localhost:8080/api/payment");
-        // xhrStates.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrPaymentMode.setRequestHeader("Content-Type", "application/json");
         xhrPaymentMode.setRequestHeader("Cache-Control", "no-cache");
         xhrPaymentMode.send(dataPayment);
     }
 
-
+    //Sends POST reques to save the address/ API
+    //Validates all the fields are filled
     saveAddressHandler = () => {
 
         this.state.flat_building_name === "" ? this.setState({ flatNameRequired: "dispBlock" }) : this.setState({ flatNameRequired: "dispNone" });
@@ -249,9 +253,9 @@ class Checkout extends Component {
             return;
         }
 
-        console.log(this.state.pincode)
-        var contactRegex = /^\d{6}$/
-        if(contactRegex.test(this.state.pincode) === false){
+        //Pincode must be 6 digits
+        var pincodeRegex = /^\d{6}$/
+        if(pincodeRegex.test(this.state.pincode) === false){
             this.setState({ pincodeHelperText: "Pincode must contain only numbers and must be 6 digits long" });
             this.setState({ pincodeRequired: "dispBlock" });
             return;
@@ -284,8 +288,7 @@ class Checkout extends Component {
             }
         });
 
-        // xhrSaveAddress.open("POST", "http://localhost:8080/api/address");
-        xhrSaveAddress.open("GET", this.props.baseUrl + "address/");
+        xhrSaveAddress.open("POST", this.props.baseUrl + "address/");
         xhrSaveAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrSaveAddress.setRequestHeader("Content-Type", "application/json");
         xhrSaveAddress.setRequestHeader("Cache-Control", "no-cache");
@@ -301,28 +304,33 @@ class Checkout extends Component {
         }
     }
 
-
+    //Handle flat and building name input
     inputFlatBuildingNameHandler = (e) => {
         this.setState({ flat_building_name: e.target.value });
     }
 
+    //Handle locality input
     inputLocalityHandler = (e) => {
         this.setState({ locality: e.target.value });
     }
 
+    //Handles city input
     inputCityHandler = (e) => {
         this.setState({ city: e.target.value });
     }
 
+    //Handles State selection
     inputStateChangeHandler = (e) =>{
         this.setState({state_name : e.target.value})
     }
 
+    //Handles pincode input
     inputPincodeHandler = (e) => {
         console.log(e.target.value)
         this.setState({ pincode: e.target.value });
     }
 
+    //Handles stepper
     handleStepper = (stepIndex) => {
         console.log(this.state.addressSelected)
         if(this.state.addressSelected.id === ""){
@@ -342,11 +350,10 @@ class Checkout extends Component {
         }
     }
 
+    //Handles the payment mode Radio button
     paymentModeSelectionHandler = (event) =>{
 
         // paymentSelected
-        console.log("paymentModeSelectionHandler :"+ event.target.value)
-
         let mode = {
             id:""
         }
@@ -356,7 +363,8 @@ class Checkout extends Component {
         console.log(sessionStorage.getItem("payment_id"))
     }
 
-
+    //Gets the coupon FLAT50%
+    //As there are no specific requirements regarding coupon, I have implemented a default FLAT 50 coupon on all orders for all custoners to show the corresponding labels
     getCoupon = () =>{
         let dataCoupon = null;
         let xhrCoupon = new XMLHttpRequest();
@@ -384,6 +392,8 @@ class Checkout extends Component {
 
     }
 
+    //Places the oder by sending POST request  /order API
+    //Checks if address is selected, payment method is selected and cart should not be empty.
     orderHander = () => {
 
         let xhrSaveAddress = new XMLHttpRequest();
@@ -433,7 +443,8 @@ class Checkout extends Component {
 
         console.log(dataOrder);
 
-
+        //Display snackbar on success with order id other wise a failure message
+        //Disable the checkout "PLACE ORDER" button on success.
         xhrSaveAddress.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                if(this.status === 201){
@@ -482,7 +493,7 @@ class Checkout extends Component {
     render(){
         return(
             <div>
-                <Header showSearchBar="false"/>
+                <Header baseUrl={this.props.baseUrl} showSearchBar="false"/>
                 <div className="checkout-div">
                     <div className="address-div">
                         <Stepper activeStep={this.state.stepperActiveStep}  orientation="vertical">

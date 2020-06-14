@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar, faRupeeSign } from '@fortawesome/free-solid-svg-icons';
 
-
+//Home page of the food ordering application.
 
 class Home extends Component {
 
@@ -46,12 +46,13 @@ class Home extends Component {
     }
 
 
-
+    //Un register window resize event handler
     componentWillUnmount() {
         window.removeEventListener("resize", this.updateDimensions);
     }
 
-
+    //Method invokes the call to restaurants or restaurantByName depending on the search string
+    //If search bar is empty, get all the restaurants other wise get the restaurant by name.
     getRestaurantSearchString = (searchStr) =>{
       this.setState({searchString : searchStr})
        if(this.state.searchString === "")
@@ -60,6 +61,7 @@ class Home extends Component {
            this.getRestaurantByName();
     }
 
+    //Sends GET request to /restaurant API
     getAllRestaurants() {
         let that = this;
         let data = null;
@@ -77,6 +79,7 @@ class Home extends Component {
         xhrRestaurant.send(data);
     }
 
+    //Sends GET request to /restaurantByName API
     getRestaurantByName(){
         let that = this;
         let data = null;
@@ -113,6 +116,8 @@ class Home extends Component {
         xhrRestaurant.send(data);
     }
 
+    //Changes the no of columns in the grid based on window size.
+    //This method is called on resize event.
     updateNoOfColumns=()=>{
         if(window.innerWidth > 414 && window.innerWidth <= 1024 )
             this.setState({noOfColumns:2})
@@ -122,12 +127,14 @@ class Home extends Component {
             this.setState({noOfColumns:4})
     }
 
+    //On page gets renderd get the restaurants from API
     componentDidMount=()=>{
 
         let that = this;
         let data = null;
         let xhrRestaurant = new XMLHttpRequest();
         xhrRestaurant.addEventListener("readystatechange", function () {
+            // console.log("Status "+this.status + " : "+this.readyState)
             if (this.readyState === 4) {
                 that.setState({
                     restaurants: JSON.parse(this.responseText).restaurants
@@ -139,14 +146,14 @@ class Home extends Component {
         xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
         xhrRestaurant.send(data);
 
-
+        //Register updateNoOfColumns method on resize event.
         this.updateNoOfColumns();
         window.addEventListener("resize", this.updateNoOfColumns);
     }
 
     //Open restaurant details when clicked    
     goToDetailsPage = (retaurant) =>{
-        this.props.history.push({test : false})
+        // this.props.history.push({test : false})
         this.props.history.push('/restaurant/' + retaurant.id);
         // console.log(retaurant.id);
     }
@@ -155,8 +162,9 @@ class Home extends Component {
     render(){ 
         return(
             <div>
-                <Header restaurantSubString={this.getRestaurantSearchString}/>
+                <Header baseUrl={this.props.baseUrl} restaurantSubString={this.getRestaurantSearchString}/>
                 <div>
+                    {/* If there are no restaurants found with the given name display a message otherwise display grid layout */}
                     {this.state.restaurants.length === 0 
                     ?<div>No restaurant with the given name.</div>
                     :<GridList className="grid-list-cards" cellHeight={500} cols={this.state.noOfColumns}>

@@ -19,7 +19,7 @@ import Tab from '@material-ui/core/Tab';
 import { withRouter } from 'react-router-dom';
 import Snackbar from "@material-ui/core/Snackbar";
 
-
+//Styling for the login and signup modal
 const customStyles = {
     content: {
         top: '50%',
@@ -27,7 +27,7 @@ const customStyles = {
         right: 'auto',
         bottom: 'auto',
         marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)',
     }
 };
 
@@ -78,6 +78,7 @@ class Header extends Component {
             snackbarText: ""
         }
     }
+    //Clears all the attributes of the modal related to login and signup
     openModalHandler = () => {
         this.setState({
             modalIsOpen: true,
@@ -107,14 +108,18 @@ class Header extends Component {
         });
     }
 
+    //Closes the login/signup modal
     closeModalHandler = () => {
         this.setState({ modalIsOpen: false });
     }
 
+    //Switches between tabs
     tabChangeHandler = (event, value) => {
         this.setState({ value });
     }
 
+    //Method is invoked when login button is clicked
+    //validates whether username and password are provided and password must be contact number.
     loginClickHandler = () => {
         this.state.username === "" ? this.setState({ usernameRequired: "dispBlock" }) : this.setState({ usernameRequired: "dispNone" });
         this.state.loginPassword === "" ? this.setState({ loginPasswordRequired: "dispBlock" }) : this.setState({ loginPasswordRequired: "dispNone" });
@@ -123,6 +128,7 @@ class Header extends Component {
             return;
         }
 
+        //validates username is contact no. and must be 10 digits
         var contactRegex = /^\d{10}$/
         if(contactRegex.test(this.state.username) === false){
             this.setState({ loginUsernameHelperText: "Invalid Contact" });
@@ -161,21 +167,27 @@ class Header extends Component {
             }
         });
 
-        xhrLogin.open("POST", "http://localhost:8080/api/customer/login");
+        // xhrLogin.open("POST", "http://localhost:8080/api/customer/login");
+        xhrLogin.open("POST", this.props.baseUrl + "customer/login");
         xhrLogin.setRequestHeader("Authorization", "Basic " + window.btoa(this.state.username + ":" + this.state.loginPassword));
         xhrLogin.setRequestHeader("Content-Type", "application/json");
         xhrLogin.setRequestHeader("Cache-Control", "no-cache");
         xhrLogin.send(dataLogin);
     }
 
+    //saves username input value on change to instance variable
     inputUsernameChangeHandler = (e) => {
         this.setState({ username: e.target.value });
     }
 
+    //saves password input value on change to instance variable
     inputLoginPasswordChangeHandler = (e) => {
         this.setState({ loginPassword: e.target.value });
     }
 
+    //Method handles the sign up tab of the modal
+    //Validates all the mandatory fields are not empty and as the specification provided.
+    //Sends post request to save the user.
     registerClickHandler = () => {
         this.state.firstname === "" ? this.setState({ firstnameRequired: "dispBlock" }) : this.setState({ firstnameRequired: "dispNone" });
         this.state.email === "" ? this.setState({ emailRequired: "dispBlock" }) : this.setState({ emailRequired: "dispNone" });
@@ -187,14 +199,15 @@ class Header extends Component {
             return;
         }
 
+        //Validates email <something>@<something>.xxx or <something>@<something>.xx.xx  
         var emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
         if(emailRegex.test(this.state.email) === false){
-            console.log("email regex");
             this.setState({ emailHelperText: "Invalid Email" });
             this.setState({ emailRequired: "dispBlock" });
             return;
         }
 
+        //Validates passowrd for min 8 characters includeing lower case, upper case, numeric and special character
         var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
         if(passwordRegex.test(this.state.registerPassword) === false){
             this.setState({ passwordHelperText: "Password must contain atlease one capital letter, one small letter, one number and one special character" });
@@ -202,6 +215,7 @@ class Header extends Component {
             return;
         }
 
+        //The contact no must be 10 digit
         var contactRegex = /^\d{10}$/
         if(contactRegex.test(this.state.contact) === false){
             this.setState({ contactHelpText: "Contact No. must contain only numbers and must be 10 digits long" });
@@ -217,7 +231,7 @@ class Header extends Component {
             "password": this.state.registerPassword
         });
 
-        console.log(dataSignup);
+        //console.log(dataSignup);
 
         let xhrSignup = new XMLHttpRequest();
         let that = this;
@@ -237,41 +251,46 @@ class Header extends Component {
             }
         });
 
-        xhrSignup.open("POST", "http://localhost:8080/api/customer/signup");
+        // xhrSignup.open("POST", "http://localhost:8080/api/customer/signup");
+        xhrSignup.open("POST", this.props.baseUrl + "customer/signup");
         xhrSignup.setRequestHeader("Content-Type", "application/json");
         xhrSignup.setRequestHeader("Cache-Control", "no-cache");
         xhrSignup.send(dataSignup);
     }
 
+    //Handle first name input
     inputFirstNameChangeHandler = (e) => {
         this.setState({ firstname: e.target.value });
     }
 
+    //Handle last name input
     inputLastNameChangeHandler = (e) => {
         this.setState({ lastname: e.target.value });
     }
 
+    //Handle email input
     inputEmailChangeHandler = (e) => {
         this.setState({ email: e.target.value });
     }
 
+    //Handle password input
     inputRegisterPasswordChangeHandler = (e) => {
         this.setState({ registerPassword: e.target.value });
     }
 
+    //Handle contact no. input
     inputContactChangeHandler = (e) => {
         this.setState({ contact: e.target.value });
     }
 
     //when Acccount info button is clicked, make sure session token is set and navigate to profile page.
     profileHandler = () => {
-        // ReactDOM.render(<Profile/>, document.getElementById('root'));
-        console.log(sessionStorage.getItem("access-token"));
+        // console.log(sessionStorage.getItem("access-token"));
         this.props.history.push('/profile');
     }
 
+    // When logout is clicked clear customer uuid, firstname, access token and navigate to home page
     logoutHandler = (e) => {
-
         let dataLogout = null;
         let xhrLogout = new XMLHttpRequest();
         let that = this;
@@ -285,13 +304,13 @@ class Header extends Component {
                     loggedIn: false,
                     username: ""
                 });
-                // ReactDOM.render(<Home/>, document.getElementById('root'));
                 that.props.history.push('/');
                 console.log(JSON.parse(this.responseText))
             }
         });
 
-        xhrLogout.open("POST", "http://localhost:8080/api/customer/logout");
+        // xhrLogout.open("POST", "http://localhost:8080/api/customer/logout");
+        xhrLogout.open("POST", this.props.baseUrl + "customer/logout");
         xhrLogout.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrLogout.setRequestHeader("Content-Type", "application/json");
         xhrLogout.setRequestHeader("Cache-Control", "no-cache");
@@ -299,6 +318,7 @@ class Header extends Component {
 
     }
 
+    //Handle search string input
     inputSearchStringChangeHandler = (e) => {
         // console.log(this.props.showSearchBar);
         this.setState({ searchString: e.target.value });
@@ -306,12 +326,12 @@ class Header extends Component {
         this.props.restaurantSubString(this.state.searchString);
     }
 
-
+    //Save session token to manage the session on page reloads
     componentDidMount = () =>{
         console.log(sessionStorage.getItem("access-token"));
     }
 
-
+    //Closees the snackbar
     closeSnackBar = (event, reason) => {
         if (reason === 'clickaway') {
             return;
@@ -457,6 +477,7 @@ class Header extends Component {
                     open={this.state.snackbarStatus}
                     autoHideDuration={3000}
                     onClose={this.closeSnackBar}
+                    // Registration success message show in red others show in white
                     message={<span id="message-id" style={{color: this.state.loggedIn === true ? "white":"red"}}>{this.state.snackbarText}</span>}
                 />
             </div>
