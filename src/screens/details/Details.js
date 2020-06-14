@@ -52,9 +52,9 @@ class Details extends Component {
                 address: {
                   id: "",
                   flat_building_name: "",
-                  locality: "Khar",
-                  city: "Mumbai",
-                  pincode: "400058",
+                  locality: "",
+                  city: "",
+                  pincode: "",
                   state: {
                     id: "",
                     state_name: ""
@@ -92,7 +92,7 @@ class Details extends Component {
         } 
     }
 
-    UNSAFE_componentWillMount() {
+    componentDidMount() {
         let that = this;
         let data = null;
         let xhrRestaurant = new XMLHttpRequest();
@@ -116,6 +116,7 @@ class Details extends Component {
         xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
         xhrRestaurant.send(data);
     }
+
 
     getRestaurantCategoryList = () =>{
         // this.setState({categoryList: ""})

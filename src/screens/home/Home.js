@@ -40,30 +40,15 @@ class Home extends Component {
                   restaurant_name: ""
                 }],
              searchString:"",
-             noOfColumns: 4  
+             noOfColumns: 4
         } 
-
+        this.updateNoOfColumns = this.updateNoOfColumns.bind(this);
     }
 
-    UNSAFE_componentWillMount() {
-        let that = this;
-        let data = null;
-        let xhrRestaurant = new XMLHttpRequest();
-        xhrRestaurant.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                    that.setState({
-                        restaurants: JSON.parse(this.responseText).restaurants
-                    });
 
-                // that.getPageData();
-                //console.log("componentWillMount :"+this.responseText)
-            }
-        });
 
-        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
-        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant");
-        xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
-        xhrRestaurant.send(data);
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimensions);
     }
 
 
@@ -84,13 +69,9 @@ class Home extends Component {
                 that.setState({
                     restaurants: JSON.parse(this.responseText).restaurants
                 });
-
-                // that.getPageData();
-               // console.log("getAllRestaurants :"+ this.responseText)
             }
         });
 
-        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant");
         xhrRestaurant.open("GET", this.props.baseUrl + "restaurant");
         xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
         xhrRestaurant.send(data);
@@ -103,7 +84,6 @@ class Home extends Component {
         xhrRestaurant.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 if(this.status === 200){
-                    console.log("RKP: "+JSON.parse(this.responseText).restaurants)
                     if(JSON.parse(this.responseText).restaurants === null){
                         that.setState({
                             restaurants: []
@@ -122,22 +102,19 @@ class Home extends Component {
                 }
 
                 // that.getPageData();
-                console.log("getRestaurantByName :"+this.status)
-                console.log("getRestaurantByName :"+this.responseText)
-                console.log("getRestaurantByName :"+that.state.restaurants)
+                // console.log("getRestaurantByName :"+this.status)
+                // console.log("getRestaurantByName :"+this.responseText)
+                // console.log("getRestaurantByName :"+that.state.restaurants)
             }
         });
 
-        // xhrMovie.open("GET", "http://localhost:8080/api/restaurant/name/"+this.state.searchString);
         xhrRestaurant.open("GET", this.props.baseUrl + "restaurant/name/"+this.state.searchString);
         xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
         xhrRestaurant.send(data);
     }
 
-    componentDidMount=()=>{
-        console.log("Window outer width :" +window.outerWidth)
-
-        if(window.outerWidth > 414 && window.outerWidth <= 1024 )
+    updateNoOfColumns=()=>{
+        if(window.innerWidth > 414 && window.innerWidth <= 1024 )
             this.setState({noOfColumns:2})
         else if(window.outerWidth <= 414)
             this.setState({noOfColumns:1})
@@ -145,11 +122,33 @@ class Home extends Component {
             this.setState({noOfColumns:4})
     }
 
+    componentDidMount=()=>{
+
+        let that = this;
+        let data = null;
+        let xhrRestaurant = new XMLHttpRequest();
+        xhrRestaurant.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                that.setState({
+                    restaurants: JSON.parse(this.responseText).restaurants
+                });
+            }
+        });
+
+        xhrRestaurant.open("GET", this.props.baseUrl + "restaurant");
+        xhrRestaurant.setRequestHeader("Cache-Control", "no-cache");
+        xhrRestaurant.send(data);
+
+
+        this.updateNoOfColumns();
+        window.addEventListener("resize", this.updateNoOfColumns);
+    }
+
     //Open restaurant details when clicked    
     goToDetailsPage = (retaurant) =>{
         this.props.history.push({test : false})
         this.props.history.push('/restaurant/' + retaurant.id);
-        console.log(retaurant.id);
+        // console.log(retaurant.id);
     }
     
 
@@ -158,33 +157,36 @@ class Home extends Component {
             <div>
                 <Header restaurantSubString={this.getRestaurantSearchString}/>
                 <div>
-                <GridList className="grid-list-cards" cellHeight={500} cols={this.state.noOfColumns}>
-                    {this.state.restaurants.map(data => (
-                        <GridListTile className="grid-item" key={"grid" + data.id} style={{ height: 'auto' }}  onClick={()=>this.goToDetailsPage(data)}>
-                            <Card className="restaurantCard">
-                                <CardMedia className="restaurantCardMedia">
-                                    <img src={data.photo_URL} className="restaurant-image" alt="test" />
-                                </CardMedia>
-                                <CardContent>
-                                    <div>
-                                        <h2 className="restaurantName-heading">{data.restaurant_name}</h2>
-                                    </div>
-                                    <div>
-                                        {data.categories}
-                                    </div>
-                                </CardContent>
-                                <CardActions className="restaurant-card-actions">
-                                    <Button className="like-button" variant="contained">
-                                        <span> <FontAwesomeIcon icon={faStar} /> {data.customer_rating}  ({data.number_customers_rated})</span>
-                                    </Button>
-                                    <span>
-                                        <FontAwesomeIcon icon={faRupeeSign} /><span className="avg-price-span-style">{data.average_price} for two</span>
-                                    </span>
-                                </CardActions>
-                            </Card>
-                        </GridListTile>
-                    ))}
-                </GridList>
+                    {this.state.restaurants.length === 0 
+                    ?<div>No restaurant with the given name.</div>
+                    :<GridList className="grid-list-cards" cellHeight={500} cols={this.state.noOfColumns}>
+                        {this.state.restaurants.map(data => (
+                            <GridListTile className="grid-item" key={"grid" + data.id} style={{ height: 'auto' }}  onClick={()=>this.goToDetailsPage(data)}>
+                                <Card className="restaurantCard">
+                                    <CardMedia className="restaurantCardMedia">
+                                        <img src={data.photo_URL} className="restaurant-image" alt="test" />
+                                    </CardMedia>
+                                    <CardContent>
+                                        <div>
+                                            <h2 className="restaurantName-heading">{data.restaurant_name}</h2>
+                                        </div>
+                                        <div>
+                                            {data.categories}
+                                        </div>
+                                    </CardContent>
+                                    <CardActions className="restaurant-card-actions">
+                                        <Button className="like-button" variant="contained">
+                                            <span> <FontAwesomeIcon icon={faStar} /> {data.customer_rating}  ({data.number_customers_rated})</span>
+                                        </Button>
+                                        <span>
+                                            <FontAwesomeIcon icon={faRupeeSign} /><span className="avg-price-span-style">{data.average_price} for two</span>
+                                        </span>
+                                    </CardActions>
+                                </Card>
+                            </GridListTile>
+                        ))}
+                    </GridList>
+                    }
                 </div>
             </div>
         );

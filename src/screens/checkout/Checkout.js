@@ -10,20 +10,14 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import GridListTileBar from '@material-ui/core/GridListTileBar';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import { IconButton } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStar, faRupeeSign, faCircle} from '@fortawesome/free-solid-svg-icons';
+import { faRupeeSign} from '@fortawesome/free-solid-svg-icons';
 import { faStopCircle } from '@fortawesome/free-regular-svg-icons';
 import Card from '@material-ui/core/Card';
-import Badge from '@material-ui/core/Badge';
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
-import AddIcon from '@material-ui/icons/Add';
-import RemoveIcon from '@material-ui/icons/Remove';
 import Divider from '@material-ui/core/Divider';
-import FastfoodIcon from '@material-ui/icons/Fastfood';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
@@ -95,8 +89,10 @@ class Checkout extends Component {
             snackbarText:"",
             snackbarStatus: false,
             discountValue:0,
-            amountPayable:0
+            amountPayable:0,
+            disableCheckoutBtn:false
         }
+        this.updateDimensions = this.updateDimensions.bind(this);
     }
 
     clearAddressTable= () =>{
@@ -120,7 +116,28 @@ class Checkout extends Component {
         })
     }
 
+     updateDimensions() {
+        // console.log("width: " + window.innerWidth + " height: "+ window.innerHeight);
+        if(window.innerWidth < 1024){
+            this.setState({noOfCols : 2})
+        }
+        else{
+            this.setState({noOfCols : 3})
+        }
+        console.log(this.state.noOfCols)
+      }
+
+
+    componentWillUnmount() {
+        window.removeEventListener("resize", this.updateDimensions);
+    }
+
+
     componentDidMount() {
+        this.getAddressOfCustomer();
+        this.updateDimensions();
+        window.addEventListener("resize", this.updateDimensions);
+        sessionStorage.removeItem("payment_id");
         if(this.props.location.orderSummary == null)
             return; 
         console.log(this.props.location.orderSummary.cartList);
@@ -139,29 +156,6 @@ class Checkout extends Component {
     }
 
 
-    componentWillMount(){
-        let dataAddress = null;
-        let xhrAddress = new XMLHttpRequest();
-        let that = this;
-        xhrAddress.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                if(this.status === 200){
-                    that.setState({
-                        address: JSON.parse(this.responseText).addresses
-                    })   
-                    console.log(that.state.address.length);
-                }
-            }
-        });
-
-        xhrAddress.open("GET", this.props.baseUrl + "address/customer");
-        xhrAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
-        xhrAddress.setRequestHeader("Content-Type", "application/json");
-        xhrAddress.setRequestHeader("Cache-Control", "no-cache");
-        xhrAddress.send(dataAddress);
-    }
-
-
     getAddressOfCustomer = () =>{
         let dataAddress = null;
         let xhrAddress = new XMLHttpRequest();
@@ -169,15 +163,17 @@ class Checkout extends Component {
         xhrAddress.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                 if(this.status === 200){
-                    that.setState({
-                        address: JSON.parse(this.responseText).addresses
-                    })   
-                    console.log(that.state.address.length);
+                    if(JSON.parse(this.responseText).addresses != null){
+                        that.setState({
+                            address: JSON.parse(this.responseText).addresses
+                        })   
+                    }
                 }
             }
         });
 
         xhrAddress.open("GET", this.props.baseUrl + "address/customer");
+        console.log(this.props.baseUrl + "address/customer");
         xhrAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrAddress.setRequestHeader("Content-Type", "application/json");
         xhrAddress.setRequestHeader("Cache-Control", "no-cache");
@@ -207,8 +203,8 @@ class Checkout extends Component {
             }
         });
 
-        // xhrStates.open("GET", this.props.baseUrl + "states/");
-        xhrStates.open("GET", "http://localhost:8080/api/states");
+        xhrStates.open("GET", this.props.baseUrl + "states/");
+        // xhrStates.open("GET", "http://localhost:8080/api/states");
         // xhrStates.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrStates.setRequestHeader("Content-Type", "application/json");
         xhrStates.setRequestHeader("Cache-Control", "no-cache");
@@ -231,8 +227,8 @@ class Checkout extends Component {
             }
         });
 
-        // xhrStates.open("GET", this.props.baseUrl + "payment/");
-        xhrPaymentMode.open("GET", "http://localhost:8080/api/payment");
+        xhrPaymentMode.open("GET", this.props.baseUrl + "payment/");
+        // xhrPaymentMode.open("GET", "http://localhost:8080/api/payment");
         // xhrStates.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrPaymentMode.setRequestHeader("Content-Type", "application/json");
         xhrPaymentMode.setRequestHeader("Cache-Control", "no-cache");
@@ -253,20 +249,6 @@ class Checkout extends Component {
             return;
         }
 
-        // var emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-        // if(emailRegex.test(this.state.email) === false){
-        //     console.log("email regex");
-        //     this.setState({ emailHelperText: "Invalid Email" });
-        //     this.setState({ emailRequired: "dispBlock" });
-        //     return;
-        // }
-
-        // var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,}$/;
-        // if(passwordRegex.test(this.state.registerPassword) === false){
-        //     this.setState({ passwordHelperText: "Password must contain atlease one capital letter, one small letter, one number and one special character" });
-        //     this.setState({ registerPasswordRequired: "dispBlock" });
-        //     return;
-        // }
         console.log(this.state.pincode)
         var contactRegex = /^\d{6}$/
         if(contactRegex.test(this.state.pincode) === false){
@@ -275,8 +257,6 @@ class Checkout extends Component {
             return;
         }
 
-        //Get UUID of the state
-        // this.getStateUuidFromName()
 
         let dataAddress = JSON.stringify({
             "city": this.state.city,
@@ -304,8 +284,8 @@ class Checkout extends Component {
             }
         });
 
-        xhrSaveAddress.open("POST", "http://localhost:8080/api/address");
-        //xhrSaveAddress.open("GET", this.props.baseUrl + "states/");
+        // xhrSaveAddress.open("POST", "http://localhost:8080/api/address");
+        xhrSaveAddress.open("GET", this.props.baseUrl + "address/");
         xhrSaveAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrSaveAddress.setRequestHeader("Content-Type", "application/json");
         xhrSaveAddress.setRequestHeader("Cache-Control", "no-cache");
@@ -346,7 +326,7 @@ class Checkout extends Component {
     handleStepper = (stepIndex) => {
         console.log(this.state.addressSelected)
         if(this.state.addressSelected.id === ""){
-            alert("Selected valid address")
+            alert("Select valid address")
             return;
         }
         if(stepIndex === 2){
@@ -356,28 +336,21 @@ class Checkout extends Component {
             }
         }
         this.setState({stepperActiveStep : stepIndex });
+        this.setState({paymentSelected : sessionStorage.getItem("payment_id")})
         if(stepIndex === 1){
              this.getPaymentModes();
         }
     }
 
-    // handleBack = (stepIndex) => {
-    //     this.setState({stepperActiveStep : stepIndex });
-    //     if(stepIndex === 1){
-    //         // this.getPaymentModes();
-    //     }
-    // }
-
-
     paymentModeSelectionHandler = (event) =>{
 
         // paymentSelected
+        console.log("paymentModeSelectionHandler :"+ event.target.value)
 
         let mode = {
             id:""
         }
         mode.id = event.target.value;
-        // this.setState({...this.state.paymentSelected, id: event.target.value });
         this.setState({paymentSelected : event.target.value})
         sessionStorage.setItem("payment_id", event.target.value);
         console.log(sessionStorage.getItem("payment_id"))
@@ -405,7 +378,6 @@ class Checkout extends Component {
 
         xhrCoupon.open("GET", this.props.baseUrl + "order/coupon/FLAT50");
         xhrCoupon.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
-        // xhrCoupon.setRequestHeader("coupon_name", "FLAT50");
         xhrCoupon.setRequestHeader("Content-Type", "application/json");
         xhrCoupon.setRequestHeader("Cache-Control", "no-cache");
         xhrCoupon.send(dataCoupon);
@@ -414,42 +386,28 @@ class Checkout extends Component {
 
     orderHander = () => {
 
-        // this.setState({ snackbarStatus: true });
+        let xhrSaveAddress = new XMLHttpRequest();
+        let that = this;
 
-        if(this.state.addressSelected.id === ""){
+        if(that.state.addressSelected.id === ""){
             alert("Selected valid address")
             return;
         }
         
-        if(this.state.paymentSelected.id === ""){
+        if(that.state.paymentSelected.id === ""){
             alert("Select payment method")
             return;
         }
 
-        // {
-        //     "address_id": "string",
-        //     "bill": 0,
-        //     "coupon_id": "string",
-        //     "discount": 0,
-        //     "item_quantities": [
-        //       {
-        //         "item_id": "string",
-        //         "price": 0,
-        //         "quantity": 0
-        //       }
-        //     ],
-        //     "payment_id": "string",
-        //     "restaurant_id": "string"
-        //   }
+        if( that.state.cartList.length === 0){
+            that.setState({snackbarText : "Unable to place your order! Please try again!"});
+            that.setState({snackbarStatus : true});
+            return;
+        }
 
-         let cartList=[];
-        //  let item = {
-        //      item_id:"",
-        //      price:0,
-        //      quantity:0
-        //  }
+        let cartList=[];
 
-        for(let item of this.props.location.orderSummary.cartList){
+        for(let item of that.props.location.orderSummary.cartList){
             let cartItem = {
                 item_id:"",
                 price:0,
@@ -467,7 +425,7 @@ class Checkout extends Component {
             "address_id": this.state.addressSelected.id,
             "bill": this.state.cartTotalAmount,
             "coupon_id": this.state.coupon.id,
-            "discount": 0,
+            "discount": this.state.discountValue,
             "item_quantities":  cartList,
             "payment_id": sessionStorage.getItem("payment_id"),
             "restaurant_id": this.props.location.orderSummary.restaurantDetails.id
@@ -475,17 +433,16 @@ class Checkout extends Component {
 
         console.log(dataOrder);
 
-        let xhrSaveAddress = new XMLHttpRequest();
-        let that = this;
+
         xhrSaveAddress.addEventListener("readystatechange", function () {
             if (this.readyState === 4) {
                if(this.status === 201){
                     that.setState({snackbarText : "Order placed successfully! Your order ID is " +JSON.parse(this.responseText).id });
                     that.setState({snackbarStatus : true});
-                    
+                    that.setState({disableCheckoutBtn : true});
+                    // that.props.history.push('/');
                }
                else{
-                
                 that.setState({snackbarText : "Unable to place your order! Please try again!"});
                 that.setState({snackbarStatus : true});
                }
@@ -493,8 +450,8 @@ class Checkout extends Component {
             }
         });
 
-        xhrSaveAddress.open("POST", "http://localhost:8080/api/order");
-        //xhrSaveAddress.open("GET", this.props.baseUrl + "states/");
+        // xhrSaveAddress.open("POST", "http://localhost:8080/api/order");
+        xhrSaveAddress.open("POST", this.props.baseUrl + "order/");
         xhrSaveAddress.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrSaveAddress.setRequestHeader("Content-Type", "application/json");
         xhrSaveAddress.setRequestHeader("Cache-Control", "no-cache");
@@ -516,6 +473,10 @@ class Checkout extends Component {
         this.setState({ snackbarStatus: true });
     };
 
+    deliveryStepChangeHandler = () =>{
+        this.setState({stepperActiveStep : 0 });
+        this.setState({changeBtnClicked : true});
+    }
 
 
     render(){
@@ -526,12 +487,12 @@ class Checkout extends Component {
                     <div className="address-div">
                         <Stepper activeStep={this.state.stepperActiveStep}  orientation="vertical">
                             {this.state.steps.map((label, index) => (
-                                <Step>
+                                <Step className="checkout-stepper" key={label}>
                                     <StepLabel>{label}</StepLabel>
                                     <StepContent>
                                         <div style={{display: this.state.stepperActiveStep === 0 ? "block" : "none"}}>
                                             <AppBar position="static">
-                                                <Tabs value={this.state.value} onChange={this.switchAddressTabs} aria-label="simple tabs example">
+                                                <Tabs className="address-tabs" value={this.state.value} onChange={this.switchAddressTabs} aria-label="simple tabs example">
                                                     <Tab label="EXISTING ADDRESS"/>
                                                     <Tab label="NEW ADDRESS"/>
                                                 </Tabs>
@@ -547,7 +508,7 @@ class Checkout extends Component {
                                                                     //  marginTop:"10px",
                                                                      margin:"10px 0px",
                                                                      borderRadius: "3px",
-                                                                     width:"33%"
+                                                                     width: window.innerWidth <= 1024 ? "50%" : "33%"
                                                                   }}
                                                             //box-shadow: 5px 5px rgba(245, 0, 87, 0.84);
                                                             className = "addSelector"
@@ -630,9 +591,9 @@ class Checkout extends Component {
                                                     <label className="payment-mode-header">Select Mode of Payment</label>
                                                     <br/>
                                                     {this.state.paymentModes.length > 0
-                                                    ?<RadioGroup value={this.state.paymentMode} onChange={this.paymentModeSelectionHandler}>
+                                                    ?<RadioGroup value={this.state.paymentMode} defaultValue={sessionStorage.getItem("payment_id")} onChange={this.paymentModeSelectionHandler}>
                                                         {this.state.paymentModes.map((mode) =>(
-                                                            <FormControlLabel className="payment-mode-form-label" value={mode.id} control={<Radio />}  label={mode.payment_name} />
+                                                            <FormControlLabel className="payment-mode-form-label" key={mode.id} value={mode.id} control={<Radio />}  label={mode.payment_name} />
                                                         ))}
                                                     </RadioGroup>
                                                     :""
@@ -664,7 +625,7 @@ class Checkout extends Component {
                         <div  className="end-msg-div" style={{display: this.state.stepperActiveStep === 2 ? "block" : "none"}}>
                                 <span className="end-message-span">View the summary & place your order now!</span>
                                 <br></br>
-                                <Button className="change-order-button">Change</Button>
+                                <Button className="change-order-button" onClick={this.deliveryStepChangeHandler}>Change</Button>
                         </div>
                     </div>
                     <div className="final-cart">
@@ -689,7 +650,6 @@ class Checkout extends Component {
                                     <span className="cart-item-price-span"><FontAwesomeIcon icon={faRupeeSign}/> {cartItem.price}</span>
                                 </div>
                             ))}
-
                             {this.state.coupon.id === "" ? <div/>
                             :<div>
                                 <div className="coupon-container-div">
@@ -717,7 +677,7 @@ class Checkout extends Component {
                                 <span> <FontAwesomeIcon className="inr-icon-color" icon={faRupeeSign}/> {this.state.amountPayable}</span>
                             </div>
                             <br/>
-                            <Button className="checkout-button" variant="contained" color="primary" onClick={this.orderHander}>PLACE ORDER</Button>
+                            <Button  disabled={this.state.disableCheckoutBtn === true} className="checkout-button" variant="contained" color="primary" onClick={this.orderHander}>PLACE ORDER</Button>
                         </Card>
                     </div>
                 </div>
@@ -729,9 +689,6 @@ class Checkout extends Component {
                     open={this.state.snackbarStatus}
                     autoHideDuration={3000}
                     onClose={this.closeSnackBar}
-                    // ContentProps={{
-                    //     'aria-describedby': 'message-id',
-                    // }}
                     message={<span id="message-id">{this.state.snackbarText}</span>}
                     action={[
                         <IconButton

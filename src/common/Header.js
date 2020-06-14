@@ -17,6 +17,8 @@ import Modal from 'react-modal';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import { withRouter } from 'react-router-dom';
+import Snackbar from "@material-ui/core/Snackbar";
+
 
 const customStyles = {
     content: {
@@ -71,7 +73,9 @@ class Header extends Component {
             loginHelperText: "",
             displayName: sessionStorage.getItem("first-name"),
             searchString: "",
-            loggedIn: sessionStorage.getItem("access-token") == null ? false : true
+            loggedIn: sessionStorage.getItem("access-token") == null ? false : true,
+            snackbarStatus: false,
+            snackbarText: ""
         }
     }
     openModalHandler = () => {
@@ -141,6 +145,12 @@ class Header extends Component {
                     that.setState({
                         displayName: JSON.parse(this.responseText).first_name
                     })
+                    that.setState({
+                        snackbarText : "Logged in successfully!"
+                    });
+                    that.setState({
+                        snackbarStatus : true
+                    });
                     that.closeModalHandler();
                 }
                 else{
@@ -215,6 +225,8 @@ class Header extends Component {
             if (this.readyState === 4) {
                if(this.status === 201){
                     that.openModalHandler();
+                    that.setState({snackbarText : "Registered successfully! Please login now!"});
+                    that.setState({snackbarStatus : true});
                }
                else{
                     that.setState({
@@ -256,8 +268,6 @@ class Header extends Component {
         // ReactDOM.render(<Profile/>, document.getElementById('root'));
         console.log(sessionStorage.getItem("access-token"));
         this.props.history.push('/profile');
-
-        
     }
 
     logoutHandler = (e) => {
@@ -290,34 +300,24 @@ class Header extends Component {
     }
 
     inputSearchStringChangeHandler = (e) => {
-        console.log(this.props.showSearchBar);
+        // console.log(this.props.showSearchBar);
         this.setState({ searchString: e.target.value });
-        console.log(this.state.searchString)
-        this.props.restaurantSubString(this.state.searchString);    
-
-        // let dataList = [];
-        // for(let item of this.state.pageData){
-        //     let post = item;
-        //     post.filter="Normal";
-        //     dataList.push(post);
-        // }
-        // this.setState({pageData:dataList})
-
-        // if(this.state.searchString !== "")
-        // {
-        //     let dataList = [];
-        //     for(let item of this.state.pageData){
-        //         let post = item;
-        //         if(post.caption.text.split("\n")[0].toLowerCase().includes(this.state.searchString.toLowerCase()) === false){
-        //             post.filter = "";
-        //         }
-        //         dataList.push(post);
-        //     }
-        // }
+        // console.log(this.state.searchString)
+        this.props.restaurantSubString(this.state.searchString);
     }
 
-    componentWillMount = () =>{
+
+    componentDidMount = () =>{
         console.log(sessionStorage.getItem("access-token"));
+    }
+
+
+    closeSnackBar = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+    
+        this.setState({ snackbarStatus: false });
     }
 
     render(){        
@@ -439,13 +439,6 @@ class Header extends Component {
                                 </FormHelperText>
                             </FormControl>
                             <br /><br />
-                            {/* {this.state.registrationSuccess === true &&
-                                <FormControl>
-                                    <span className="successText">
-                                        {this.state.registrationHelperText}
-                                    </span>
-                                </FormControl>
-                            } */}
                             <FormControl>
                                 <FormHelperText>
                                     <span className="red">{this.state.registrationHelperText}</span>
@@ -456,6 +449,16 @@ class Header extends Component {
                         </TabContainer>
                     }
                 </Modal>
+                <Snackbar
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    open={this.state.snackbarStatus}
+                    autoHideDuration={3000}
+                    onClose={this.closeSnackBar}
+                    message={<span id="message-id" style={{color: this.state.loggedIn === true ? "white":"red"}}>{this.state.snackbarText}</span>}
+                />
             </div>
         )
     }
