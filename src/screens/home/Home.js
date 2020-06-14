@@ -134,6 +134,7 @@ class Home extends Component {
         let data = null;
         let xhrRestaurant = new XMLHttpRequest();
         xhrRestaurant.addEventListener("readystatechange", function () {
+            // console.log("Status "+this.status + " : "+this.readyState)
             if (this.readyState === 4) {
                 that.setState({
                     restaurants: JSON.parse(this.responseText).restaurants
@@ -161,7 +162,7 @@ class Home extends Component {
     render(){ 
         return(
             <div>
-                <Header restaurantSubString={this.getRestaurantSearchString}/>
+                <Header baseUrl={this.props.baseUrl} restaurantSubString={this.getRestaurantSearchString}/>
                 <div>
                     {/* If there are no restaurants found with the given name display a message otherwise display grid layout */}
                     {this.state.restaurants.length === 0 

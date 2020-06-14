@@ -179,6 +179,10 @@ ul.MuiGridList-root{
      box-shadow: none;
  }
 
+ .ReactModal__Overlay--after-open{
+    z-index: 1;
+}
+
 @media (max-width:1024px ) {
     .app-header {
         background-color: #263238;
@@ -206,6 +210,6 @@ ul.MuiGridList-root{
 
     .menu-container{
         margin-top: 50px;
-    }
-    
+    }  
+
  }

@@ -282,7 +282,7 @@ class Details extends Component {
 
         return(
             <div>
-                <Header showSearchBar="false"/>
+                <Header baseUrl={this.props.baseUrl} showSearchBar="false"/>
                 <div>
                     <div className="restaurant-details">
                         <img src={this.state.restaurantDetails.photo_URL} className="restaurant-image-thumbnail" alt="test" />

@@ -354,8 +354,6 @@ class Checkout extends Component {
     paymentModeSelectionHandler = (event) =>{
 
         // paymentSelected
-        console.log("paymentModeSelectionHandler :"+ event.target.value)
-
         let mode = {
             id:""
         }
@@ -495,7 +493,7 @@ class Checkout extends Component {
     render(){
         return(
             <div>
-                <Header showSearchBar="false"/>
+                <Header baseUrl={this.props.baseUrl} showSearchBar="false"/>
                 <div className="checkout-div">
                     <div className="address-div">
                         <Stepper activeStep={this.state.stepperActiveStep}  orientation="vertical">

@@ -27,7 +27,7 @@ const customStyles = {
         right: 'auto',
         bottom: 'auto',
         marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
+        transform: 'translate(-50%, -50%)',
     }
 };
 
@@ -167,7 +167,8 @@ class Header extends Component {
             }
         });
 
-        xhrLogin.open("POST", "http://localhost:8080/api/customer/login");
+        // xhrLogin.open("POST", "http://localhost:8080/api/customer/login");
+        xhrLogin.open("POST", this.props.baseUrl + "customer/login");
         xhrLogin.setRequestHeader("Authorization", "Basic " + window.btoa(this.state.username + ":" + this.state.loginPassword));
         xhrLogin.setRequestHeader("Content-Type", "application/json");
         xhrLogin.setRequestHeader("Cache-Control", "no-cache");
@@ -201,7 +202,6 @@ class Header extends Component {
         //Validates email <something>@<something>.xxx or <something>@<something>.xx.xx  
         var emailRegex = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
         if(emailRegex.test(this.state.email) === false){
-            console.log("email regex");
             this.setState({ emailHelperText: "Invalid Email" });
             this.setState({ emailRequired: "dispBlock" });
             return;
@@ -231,7 +231,7 @@ class Header extends Component {
             "password": this.state.registerPassword
         });
 
-        console.log(dataSignup);
+        //console.log(dataSignup);
 
         let xhrSignup = new XMLHttpRequest();
         let that = this;
@@ -251,7 +251,8 @@ class Header extends Component {
             }
         });
 
-        xhrSignup.open("POST", "http://localhost:8080/api/customer/signup");
+        // xhrSignup.open("POST", "http://localhost:8080/api/customer/signup");
+        xhrSignup.open("POST", this.props.baseUrl + "customer/signup");
         xhrSignup.setRequestHeader("Content-Type", "application/json");
         xhrSignup.setRequestHeader("Cache-Control", "no-cache");
         xhrSignup.send(dataSignup);
@@ -308,7 +309,8 @@ class Header extends Component {
             }
         });
 
-        xhrLogout.open("POST", "http://localhost:8080/api/customer/logout");
+        // xhrLogout.open("POST", "http://localhost:8080/api/customer/logout");
+        xhrLogout.open("POST", this.props.baseUrl + "customer/logout");
         xhrLogout.setRequestHeader("Authorization", "Bearer " + sessionStorage.getItem("access-token"));
         xhrLogout.setRequestHeader("Content-Type", "application/json");
         xhrLogout.setRequestHeader("Cache-Control", "no-cache");
